@@ -13,10 +13,10 @@ char_list char_list_create ();
 int main(void) {
   char my_string[17] = "Have a nice day!";
   char my_key[17] = "ABCDEFGHIJ123456";
-  // file pointer 
-  FILE *fp;
-  // charactor for looping the file
-  char ch;
+  /* // file pointer */ 
+  /* FILE *fp; */
+  /* // charactor for looping the file */
+  /* char ch; */
 
   for (int i = 0; i < 16; i++) {
     my_string[i] = my_string[i] ^ my_key[i];
@@ -33,18 +33,18 @@ int main(void) {
   printf ("\n");
 
 
-  // read the file with fopen
-  // fopen ("file-name.extention", "read/write")
-  // "r" = read "w" = write
-  fp = fopen ("list.txt", "r");
-  if (fp == NULL) printf("file not found");
-  // loop while not at the end of file
-  while ((ch = fgetc (fp)) != EOF) {
-    printf ("%c", ch);
-  }
+  /* // read the file with fopen */
+  /* // fopen ("file-name.extention", "read/write") */
+  /* // "r" = read "w" = write */
+  /* fp = fopen ("list.txt", "r"); */
+  /* if (fp == NULL) printf("file not found"); */
+  /* // loop while not at the end of file */
+  /* while ((ch = fgetc (fp)) != EOF) { */
+  /*   printf ("%c", ch); */
+  /* } */
 
-  // important to close the file
-  fclose (fp);
+  /* // important to close the file */
+  /* fclose (fp); */
 
   return 0;
 }
