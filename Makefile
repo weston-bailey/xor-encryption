@@ -8,4 +8,4 @@ clean:
 	rm -rf main
 
 run:
-	./main list.txt
+	./main list.txt hello
