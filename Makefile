@@ -8,4 +8,8 @@ clean:
 	rm -rf main
 
 run:
+	sh reset.sh
+	echo "first run"
+	./main list.txt hello
+	echo "second run"
 	./main list.txt hello
