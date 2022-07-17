@@ -53,34 +53,62 @@ char *read_file(char *filename) {
 
 int main(int argc, char *argv[])
 {
-	char my_string[17] = "Have a nice day!";
-	char my_key[17] = "ABCDEFGHIJ123456";
-	int i = 0;
+	/* char my_string[17] = "Have a nice day!"; */
+	/* char my_key[17] = "ABCDEFGHIJ123456"; */
+	/* int i = 0; */
 	char *file_in;
+	char prev_c;
+	int flag = 0;
 
-	for (i = 1; i < argc; i++) {
-		printf("script arg %d: %s\n", i, argv[i]);
-	}
+	/* for (i = 1; i < argc; i++) { */
+	/* 	printf("script arg %d: %s\n", i, argv[i]); */
+	/* } */
 
-	for (i = 0; i < 16; i++) {
-		my_string[i] = my_string[i] ^ my_key[i];
-		printf("%c", my_string[i]);
-	}
+	/* for (i = 0; i < 16; i++) { */
+	/* 	my_string[i] = my_string[i] ^ my_key[i]; */
+	/* 	printf("%c", my_string[i]); */
+	/* } */
 
-	printf("\n");
+	/* printf("\n"); */
 
-	for (i = 0; i < 16; i++) {
-		my_string[i] = my_string[i] ^ my_key[i];
-		printf("%c", my_string[i]);
-	}
+	/* for (i = 0; i < 16; i++) { */
+	/* 	my_string[i] = my_string[i] ^ my_key[i]; */
+	/* 	printf("%c", my_string[i]); */
+	/* } */
 
-	printf("\n");
+	/* printf("\n"); */
 
 
 	file_in = read_file(argv[1]);
 	
+	// encrypt the file in memory
+	printf("encrypted in memory:\n");
 	for (char c = *file_in; c != '\0'; c = *++file_in) {
+		if (flag == 0) {
+			prev_c = c;
+			flag++;
+			continue;
+		}
+		
+		c = c ^ prev_c;
+		
 		printf("%c", c);
+	}
+	printf("\n");
+	
+	flag = 0;
+	prev_c = '\0';
+	printf("decrypted in memory:\n");
+	for (char c = *file_in; c != '\0'; c = *++file_in) {
+		/* if (flag == 0) { */
+		/* 	prev_c = c; */
+		/* 	flag++; */
+		/* 	continue; */
+		/* } */
+		
+		/* c = c ^ prev_c; */
+		
+		printf("%c\n", c);
 	}
 	printf("\n");
 
