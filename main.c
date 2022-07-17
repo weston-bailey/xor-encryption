@@ -5,59 +5,27 @@
 
 #define RF_BUFFSIZE 1024
 
-void exit_fail(char *msg) {
-	printf("%s\n", msg);
-	exit(EXIT_FAILURE);
-}
+void exit_fail(char *msg);
 
-char *read_file(char *filename) {
+struct file {
+	int len;
+	char *filename;
+	char *buffer;
+};
 
-	FILE *fp;
-	char ch;
-	int i = 0;
-	int buffsize = RF_BUFFSIZE;
-	char *read_buffer = malloc(sizeof(char) * buffsize); 
-	fp = fopen (filename, "r");
 
-	if (!read_buffer) {
-		fclose(fp);
-		exit_fail("allocation error.");
-	}
-
-	if (!fp) {
-		printf("file: %s not found.\n", filename);
-		fclose(fp);
-		exit(EXIT_FAILURE);
-	}
-	// loop while not at the end of file
-	while ((ch = fgetc(fp)) != EOF) {
-		/* printf("%c", ch); */
-		read_buffer[i] = ch;
-		i++;
-		if (i >= buffsize) {
-			buffsize += RF_BUFFSIZE;
-			read_buffer = realloc(read_buffer, buffsize);
-			if (!read_buffer) {
-				fclose(fp);
-				exit_fail("reallocation error.\n");
-			}
-		}
-	}
-	// important to close the file
-	fclose(fp);
-
-	read_buffer[i] = '\0';
-	
-	return read_buffer;
-}
+struct file read_file(char *filename);
+void print_file(struct file f);
+void write_file(struct file out_file);
 
 int main(int argc, char *argv[])
 {
 	/* char my_string[17] = "Have a nice day!"; */
 	/* char my_key[17] = "ABCDEFGHIJ123456"; */
 	/* int i = 0; */
-	char *file_in;
+	struct file file_in;
 	char prev_c;
+	char swap;
 	int flag = 0;
 
 	/* for (i = 1; i < argc; i++) { */
@@ -80,54 +48,104 @@ int main(int argc, char *argv[])
 
 
 	file_in = read_file(argv[1]);
+
+	
+	printf("file in memory:\n");
+	print_file(file_in);	
 	
 	// encrypt the file in memory
-	printf("encrypted in memory:\n");
-	for (char c = *file_in; c != '\0'; c = *++file_in) {
-		if (flag == 0) {
-			prev_c = c;
-			flag++;
+	int i = 0;
+	for (i = 0; i < file_in.len; i++) {
+		if (i == 0) {
+			prev_c = file_in.buffer[i];
 			continue;
 		}
-		
-		c = c ^ prev_c;
-		
-		printf("%c", c);
+		swap = file_in.buffer[i];
+		file_in.buffer[i] = file_in.buffer[i] ^ prev_c;
+		prev_c = swap;
 	}
-	printf("\n");
-	
-	flag = 0;
-	prev_c = '\0';
-	printf("decrypted in memory:\n");
-	for (char c = *file_in; c != '\0'; c = *++file_in) {
-		/* if (flag == 0) { */
-		/* 	prev_c = c; */
-		/* 	flag++; */
-		/* 	continue; */
-		/* } */
-		
-		/* c = c ^ prev_c; */
-		
-		printf("%c\n", c);
-	}
-	printf("\n");
 
-	/* // file pointer */
-	/* FILE *fp; */
-	/* // charactor for looping the file */
-	/* char ch; */
-	/* // read the file with fopen */
-	/* // fopen ("file-name.extention", "read/write") */
-	/* // "r" = read "w" = write */
-	/* fp = fopen ("list.txt", "r"); */
-	/* if (fp == NULL) printf("file not found"); */
-	/* // loop while not at the end of file */
-	/* while ((ch = fgetc (fp)) != EOF) { */
-	/*   printf ("%c", ch); */
-	/* } */
-
-	/* // important to close the file */
-	/* fclose (fp); */
+	printf("encrypted in memory:\n");
+	print_file(file_in);	
 
 	return 0;
+}
+
+
+void exit_fail(char *msg) 
+{
+	printf("%s\n", msg);
+	exit(EXIT_FAILURE);
+}
+
+struct file read_file(char *filename) 
+{
+
+	FILE *fp;
+	char ch;
+	int i = 0;
+	int buffsize = RF_BUFFSIZE;
+	struct file new_file;
+	new_file.len = 0;
+	new_file.buffer = malloc(sizeof(char) * buffsize); 
+	new_file.filename = filename;
+
+	fp = fopen (new_file.filename, "r");
+	if (!new_file.filename) {
+		fclose(fp);
+		exit_fail("allocation error.");
+	}
+
+	if (!fp) {
+		printf("file: %s not found.\n", filename);
+		fclose(fp);
+		exit(EXIT_FAILURE);
+	}
+	// loop while not at the end of file
+	while ((ch = fgetc(fp)) != EOF) {
+		/* printf("%c", ch); */
+		new_file.buffer[i] = ch;
+		i++;
+		new_file.len++;
+		if (i >= buffsize) {
+			buffsize += RF_BUFFSIZE;
+			new_file.buffer = realloc(new_file.buffer, buffsize);
+			if (!new_file.buffer) {
+				fclose(fp);
+				exit_fail("reallocation error.\n");
+			}
+		}
+	}
+	// important to close the file
+	fclose(fp);
+
+	new_file.buffer[i] = '\0';
+	
+	return new_file;
+}
+
+void print_file(struct file f)
+{
+	int i = 0;
+	for (i = 0; i < f.len; i++) {
+		printf("%c", f.buffer[i]);
+	}
+	return;
+}
+
+void write_file(struct file out_file) 
+{
+	FILE *fp = fopen(out_file.filename, "w+");
+
+
+	if (!fp) {
+		printf("file: %s not found.\n", out_file.filename);
+		fclose(fp);
+		exit(EXIT_FAILURE);
+	}
+
+	fputs(out_file.buffer, fp);
+
+	fclose(fp);
+	return;
 }
