@@ -13,8 +13,8 @@ struct file {
 	char *buffer;
 };
 
-
 struct file read_file(char *filename);
+struct file xor_enc(struct file f, char *key, int key_len);
 void print_file(struct file f);
 void write_file(struct file out_file);
 
@@ -33,10 +33,7 @@ int main(int argc, char *argv[])
 	printf("file in memory:\n");
 	print_file(file_in);	
 	
-	// encrypt the file in memory
-	for (i = 0; i < file_in.len; i++) {
-		file_in.buffer[i] = file_in.buffer[i] ^ key[i % key_len];	
-	}
+	file_in = xor_enc(file_in, key, key_len);
 
 	printf("encrypted in memory:\n");
 	print_file(file_in);	
@@ -99,6 +96,16 @@ struct file read_file(char *filename)
 	return new_file;
 }
 
+struct file xor_enc(struct file f, char *key, int key_len)
+{
+	int i = 0;
+	// encrypt the file in memory
+	for (i = 0; i < f.len; i++) {
+		f.buffer[i] = f.buffer[i] ^ key[i % key_len];	
+	}
+
+	return f;
+}
 void print_file(struct file f)
 {
 	int i = 0;
