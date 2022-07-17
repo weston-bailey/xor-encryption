@@ -1,6 +1,7 @@
 #include <stdio.h>
 // #include <stddef.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define RF_BUFFSIZE 1024
 
@@ -29,7 +30,7 @@ char *read_file(char *filename) {
 		exit(EXIT_FAILURE);
 	}
 	// loop while not at the end of file
-	while ((ch = fgetc (fp)) != EOF) {
+	while ((ch = fgetc(fp)) != EOF) {
 		/* printf("%c", ch); */
 		read_buffer[i] = ch;
 		i++;
@@ -77,6 +78,11 @@ int main(int argc, char *argv[])
 
 
 	file_in = read_file(argv[1]);
+	
+	for (char c = *file_in; c != '\0'; c = *++file_in) {
+		printf("%c", c);
+	}
+	printf("\n");
 
 	/* // file pointer */
 	/* FILE *fp; */
