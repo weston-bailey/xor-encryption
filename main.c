@@ -4,8 +4,11 @@
 #include <string.h>
 
 #define RF_BUFFSIZE 1024
+#define RL_BUFFSIZE 1024
 
 void exit_fail(char *msg);
+char *read_line(void);
+void help(void);
 
 struct file {
 	int len;
@@ -20,25 +23,34 @@ void write_file(struct file out_file);
 
 int main(int argc, char *argv[])
 {
+	struct file file_in = read_file(argv[1]);
+	char *key = argv[2];
+	int key_len = strlen(key);
+	char *input_line;
+
 	if (argc != 3) {
 		printf("app needs two args.\n");
 		return 0;
 	}
 
-	struct file file_in = read_file(argv[1]);
-	char *key = argv[2];
-	int key_len = strlen(key);
-	int i = 0;	
-	
-	printf("file in memory:\n");
-	print_file(file_in);	
-	
+	/* printf("file in memory:\n"); */
+	/* print_file(file_in); */	
+
 	file_in = xor_enc(file_in, key, key_len);
 
-	printf("encrypted in memory:\n");
+	printf("encrypted data in memory:\n");
 	print_file(file_in);	
+
+	printf("\n");
+	printf("Would you like proceed with writing the file? (yes/no)\n");
 	
-	write_file(file_in);
+	input_line = read_line();
+
+	if (strcmp(input_line, "yes") == 0 || strcmp(input_line, "y") == 0) {
+		write_file(file_in);
+	} else {
+		printf("File not written. Exiting...\n");
+	}
 
 	return 0;
 }
@@ -49,6 +61,42 @@ void exit_fail(char *msg)
 	printf("%s\n", msg);
 	exit(EXIT_FAILURE);
 }
+
+
+char *read_line(void)
+{
+	int buffsize = RL_BUFFSIZE;
+	int i = 0;
+	char c = 0;
+	char *buffer = malloc(sizeof(char) * buffsize);
+
+	if (!buffer) {
+		exit_fail("allocation error\n");
+	}
+
+	// read input until EOF or newline
+	while (1) {
+		c = getchar();
+		
+		if (c == EOF || c == '\n') {
+			buffer[i] = '\0';
+			return buffer;
+		} else {
+			buffer[i] = c;
+		}
+
+		i++;
+
+		if (i >= buffsize) {
+			buffsize += RL_BUFFSIZE;
+			buffer = realloc(buffer, buffsize);
+			if (!buffer) {
+				exit_fail("allocation error\n");
+			}
+		}
+	}
+}
+
 
 struct file read_file(char *filename) 
 {
