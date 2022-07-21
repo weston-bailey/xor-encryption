@@ -178,7 +178,7 @@ void write_file(struct file out_file)
 		int result = fputc(out_file.buffer[i], fp);
 		if (result == EOF) {
 			fclose(fp);
-			exit_fail("Failed to write a character! I am pretty sure the file is fucked.\n");
+			exit_fail("Failed to write a character! I am pretty sure the file is ruined.\n");
 		}
 		i++;
 	}
