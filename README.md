@@ -13,7 +13,7 @@ Usage: `./main < file to encrypt/decrypt > < password >`
 	* [ ] read password from file
 	* [ ] generate password
 	* [ ] reference self (previous char) instead of password
-* [ ] display output and prompt prior to writing file
+* [x] display output and prompt prior to writing file
 * [ ] add help
 
 
