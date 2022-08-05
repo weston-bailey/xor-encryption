@@ -18,8 +18,10 @@ struct file {
 
 struct file read_file(char *filename);
 struct file xor_enc(struct file f, char *key, int key_len);
+struct file xor_enc_prev(struct file f);
 void print_file(struct file f);
 void write_file(struct file out_file);
+void write_stdout(struct file f);
 
 int main(int argc, char *argv[])
 {
@@ -36,21 +38,28 @@ int main(int argc, char *argv[])
 	/* printf("file in memory:\n"); */
 	/* print_file(file_in); */	
 
-	file_in = xor_enc(file_in, key, key_len);
-
-	printf("encrypted data in memory:\n");
-	print_file(file_in);	
-
-	printf("\n");
-	printf("Would you like proceed with writing the file? (yes/no)\n");
+	/* file_in = xor_enc(file_in, key, key_len); */
+	puts("first enc:\n");
+	file_in = xor_enc_prev(file_in);
+	write_stdout(file_in);
 	
-	input_line = read_line();
+	puts("\nsecond enc:\n");
+	file_in = xor_enc_prev(file_in);
+	write_stdout(file_in);
+	puts("\n");
+	/* printf("encrypted data in memory:\n"); */
+	/* print_file(file_in); */	
 
-	if (strcmp(input_line, "yes") == 0 || strcmp(input_line, "y") == 0) {
-		write_file(file_in);
-	} else {
-		printf("File not written. Exiting...\n");
-	}
+	/* printf("\n"); */
+	/* printf("Would you like proceed with writing the file? (yes/no)\n"); */
+	
+	/* input_line = read_line(); */
+
+	/* if (strcmp(input_line, "yes") == 0 || strcmp(input_line, "y") == 0) { */
+	/* 	write_file(file_in); */
+	/* } else { */
+	/* 	printf("File not written. Exiting...\n"); */
+	/* } */
 
 	return 0;
 }
@@ -154,6 +163,20 @@ struct file xor_enc(struct file f, char *key, int key_len)
 
 	return f;
 }
+
+struct file xor_enc_prev(struct file f) 
+{
+	// starting at the second char, hold char in a swap vairable and use prev char to enc current char
+	int i = 1;
+	char swap = f.buffer[0];
+	while (i <= f.len) {
+		f.buffer[i] = f.buffer[i] ^ swap;
+		swap = f.buffer[i];
+		i++;
+	}
+
+	return f;
+}
 void print_file(struct file f)
 {
 	int i = 0;
@@ -184,5 +207,11 @@ void write_file(struct file out_file)
 	}
 
 	fclose(fp);
+	return;
+}
+
+void write_stdout(struct file f) 
+{
+	fwrite(f.buffer, 1, f.len, stdout);
 	return;
 }
